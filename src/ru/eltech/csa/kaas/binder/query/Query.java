@@ -8,9 +8,18 @@ import ru.eltech.csa.kaas.binder.model.ServiceType;
  */
 public interface Query {
 
+    /**
+     * @return Required service types.
+     */
     List<ServiceType> getServiceTypes();
 
+    /**
+     * @return List of criterion importance values.
+     */
     List<CriterionImportance> getCriterionImportances();
 
+    /**
+     * @return List of conditions needed to be applied.
+     */
     List<Condition> getConditions();
 }
