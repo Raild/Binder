@@ -1,9 +1,12 @@
 package ru.eltech.csa.kaas.binder.model.impl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlID;
 import ru.eltech.csa.kaas.binder.model.Knowledge;
 
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class AbstractKnowledge implements Knowledge {
     
     @XmlID
