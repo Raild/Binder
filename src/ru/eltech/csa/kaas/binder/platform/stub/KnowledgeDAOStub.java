@@ -17,19 +17,15 @@ import ru.eltech.csa.kaas.binder.model.Criterion;
 import ru.eltech.csa.kaas.binder.model.Estimate;
 import ru.eltech.csa.kaas.binder.model.KnowledgeBase;
 import ru.eltech.csa.kaas.binder.model.ServiceType;
-import ru.eltech.csa.kaas.binder.model.impl.CriterionImpl;
-import ru.eltech.csa.kaas.binder.model.impl.EstimateImpl;
-import ru.eltech.csa.kaas.binder.model.impl.KnowledgeBaseImpl;
-import ru.eltech.csa.kaas.binder.model.impl.ServiceTypeImpl;
 import ru.eltech.csa.kaas.binder.platform.KnowledgeDAO;
 import ru.eltech.csa.kaas.binder.query.Query;
 
 public class KnowledgeDAOStub implements KnowledgeDAO {
 
-    private KnowledgeBaseImpl knowledgeBase;
+    private KnowledgeBase knowledgeBase;
 
     public KnowledgeDAOStub() {
-        knowledgeBase = new KnowledgeBaseImpl();
+        knowledgeBase = new KnowledgeBase();
         stubInit();
     }
 
@@ -39,17 +35,18 @@ public class KnowledgeDAOStub implements KnowledgeDAO {
     }
 
     private void stubInit() {
-        ServiceTypeImpl st = new ServiceTypeImpl();
+        ServiceType st = new ServiceType();
         st.setId("0");
         st.setURI("http://example.com/0/");
         
         List<ServiceType> serviceTypes = Arrays.asList((ServiceType) st);
         
-        CriterionImpl crit = new CriterionImpl();
+        Criterion crit = new Criterion();
         crit.setId("1");
         crit.setURI("http://example.com/1/");
         
-        EstimateImpl es = new EstimateImpl();
+        Estimate es = new Estimate();
+        es.setId("2");
         es.setCriterion(crit);
         es.setServiceTypes(serviceTypes);
 
@@ -60,9 +57,9 @@ public class KnowledgeDAOStub implements KnowledgeDAO {
 
     public static void main(String[] args) {
         {
-            KnowledgeBaseImpl kb = (KnowledgeBaseImpl) new KnowledgeDAOStub().select(null);
+            KnowledgeBase kb = (KnowledgeBase) new KnowledgeDAOStub().select(null);
             try {
-                JAXBContext context = JAXBContext.newInstance(KnowledgeBaseImpl.class);
+                JAXBContext context = JAXBContext.newInstance(KnowledgeBase.class);
                 File of = new File("book.xml");
                 
                 OutputStream os = new FileOutputStream(of);             
@@ -72,7 +69,7 @@ public class KnowledgeDAOStub implements KnowledgeDAO {
                 
                 StreamSource is = new StreamSource(of);
                 Unmarshaller um = context.createUnmarshaller();
-                KnowledgeBaseImpl kb2 = um.unmarshal(is, KnowledgeBaseImpl.class).getValue();
+                KnowledgeBase kb2 = um.unmarshal(is, KnowledgeBase.class).getValue();
                 System.out.println(kb2);
                 
                 

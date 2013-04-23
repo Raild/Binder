@@ -1,16 +1,60 @@
 package ru.eltech.csa.kaas.binder.model;
 
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlIDREF;
 
-public interface Estimate extends Knowledge {
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Estimate extends AbstractKnowledge {
 
-    Criterion getCriterion();
+    @XmlIDREF
+    private Criterion criterion;
+    @XmlIDREF
+    private List<ServiceType> serviceTypes;
+    @XmlIDREF
+    private List<ServiceProvider> serviceProviders;
+    @XmlIDREF
+    private List<ServiceImplementation> serviceImplementations;
+    private int value;
 
-    List<ServiceType> getServiceTypes();
+    public Criterion getCriterion() {
+        return criterion;
+    }
 
-    List<ServiceProvider> getServiceProviders();
+    public void setCriterion(Criterion criterion) {
+        this.criterion = criterion;
+    }
 
-    List<ServiceImplementation> getServiceImplementations();
+    public List<ServiceType> getServiceTypes() {
+        return serviceTypes;
+    }
 
-    int getValue();
+    public void setServiceTypes(List<ServiceType> serviceTypes) {
+        this.serviceTypes = serviceTypes;
+    }
+
+    public List<ServiceProvider> getServiceProviders() {
+        return serviceProviders;
+    }
+
+    public void setServiceProviders(List<ServiceProvider> serviceProviders) {
+        this.serviceProviders = serviceProviders;
+    }
+
+    public List<ServiceImplementation> getServiceImplementations() {
+        return serviceImplementations;
+    }
+
+    public void setServiceImplementations(List<ServiceImplementation> serviceImplementations) {
+        this.serviceImplementations = serviceImplementations;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
 }

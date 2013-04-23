@@ -1,24 +1,20 @@
-package ru.eltech.csa.kaas.binder.model.impl;
+package ru.eltech.csa.kaas.binder.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlID;
-import ru.eltech.csa.kaas.binder.model.Knowledge;
-
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class AbstractKnowledge implements Knowledge {
-    
+public abstract class AbstractKnowledge {
+
     @XmlID
     private String id;
     private String URI;
 
-    @Override
     public String getId() {
         return id;
     }
 
-    @Override
     public String getURI() {
         return URI;
     }
@@ -30,5 +26,4 @@ public abstract class AbstractKnowledge implements Knowledge {
     public void setURI(String URI) {
         this.URI = URI;
     }
-
 }

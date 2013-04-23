@@ -1,4 +1,4 @@
 package ru.eltech.csa.kaas.binder.model;
 
-public interface Criterion extends Knowledge {
+public class Criterion extends AbstractKnowledge {
 }
