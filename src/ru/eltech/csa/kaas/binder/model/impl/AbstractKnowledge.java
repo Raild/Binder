@@ -1,15 +1,17 @@
 package ru.eltech.csa.kaas.binder.model.impl;
 
+import javax.xml.bind.annotation.XmlID;
 import ru.eltech.csa.kaas.binder.model.Knowledge;
 
 
 public abstract class AbstractKnowledge implements Knowledge {
     
-    private int id;
+    @XmlID
+    private String id;
     private String URI;
 
     @Override
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -18,7 +20,7 @@ public abstract class AbstractKnowledge implements Knowledge {
         return URI;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
