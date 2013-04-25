@@ -5,13 +5,15 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Container for knowledge entries.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSeeAlso(value=Criterion.class)
+@XmlSeeAlso(value = Criterion.class)
 public class KnowledgeBase {
 
     private List<Criterion> criterions;
@@ -61,7 +63,12 @@ public class KnowledgeBase {
     }
 
     @Override
-    public String toString() {
-        return "KnowledgeBaseImpl{" + "criterions=" + criterions + ", estimates=" + estimates + ", serviceTypes=" + serviceTypes + ", serviceProviders=" + serviceProviders + ", serviceImplementations=" + serviceImplementations + '}';
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }
