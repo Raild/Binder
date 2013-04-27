@@ -3,6 +3,8 @@ package ru.eltech.csa.kaas.binder.model;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -10,13 +12,22 @@ public class Estimate extends AbstractKnowledge {
 
     @XmlIDREF
     private Criterion criterion;
+    
+    @XmlElementWrapper
+    @XmlElement( name="serviceType" )
     @XmlIDREF
     private List<ServiceType> serviceTypes;
+    
+    @XmlElementWrapper
+    @XmlElement( name="serviceProvider" )
     @XmlIDREF
     private List<ServiceProvider> serviceProviders;
+    
+    @XmlElementWrapper
+    @XmlElement( name="serviceImplementation" )
     @XmlIDREF
     private List<ServiceImplementation> serviceImplementations;
-    private int value;
+    private double value;
 
     public Criterion getCriterion() {
         return criterion;
@@ -50,11 +61,11 @@ public class Estimate extends AbstractKnowledge {
         this.serviceImplementations = serviceImplementations;
     }
 
-    public int getValue() {
+    public double getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(double value) {
         this.value = value;
     }
 }
