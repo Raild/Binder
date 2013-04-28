@@ -70,8 +70,13 @@ public class KnowledgeBaseAdapter {
     }
 
     private <T extends AbstractKnowledge> void init(Map<String, ? super T> map, List<? extends T> list) {
-        for (T item : list) {
-            map.put(item.getId(), item);
+        if (list != null) {
+            for (T item : list) {
+                if (map.containsKey(item.getId())) {
+                    throw new IllegalArgumentException("Knowledge base contains items with duplicate id: " + item.getId());
+                }
+                map.put(item.getId(), item);
+            }
         }
     }
 }
