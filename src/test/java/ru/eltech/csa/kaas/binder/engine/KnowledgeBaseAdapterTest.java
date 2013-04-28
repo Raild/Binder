@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package ru.eltech.csa.kaas.binder.engine;
 
 import java.util.Arrays;
@@ -16,17 +13,14 @@ import ru.eltech.csa.kaas.binder.model.ServiceImplementation;
 import ru.eltech.csa.kaas.binder.model.ServiceProvider;
 import ru.eltech.csa.kaas.binder.model.ServiceType;
 
-/**
- *
- * @author Raild
- */
+
 public class KnowledgeBaseAdapterTest {
 
     private static final String SERVICE_PROVIDER_ID = "1";
     private static final String SERVICE_TYPE_ID = "2";
     private static final String SERVICE_IMPLEMENTATION_ID = "1";
     private static final String CRITERION_ID = "4";
-    public static final String ESTIMATE_ID = "5";
+    private static final String ESTIMATE_ID = "5";
     private KnowledgeBaseAdapter adapter;
     private KnowledgeBase knowledgeBase;
     private List<ServiceProvider> serviceProviderList;
