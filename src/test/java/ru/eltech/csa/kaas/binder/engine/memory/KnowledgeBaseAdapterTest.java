@@ -1,5 +1,5 @@
 
-package ru.eltech.csa.kaas.binder.engine;
+package ru.eltech.csa.kaas.binder.engine.memory;
 
 import java.util.Arrays;
 import java.util.List;

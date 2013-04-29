@@ -1,4 +1,4 @@
-package ru.eltech.csa.kaas.binder.engine;
+package ru.eltech.csa.kaas.binder.engine.memory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
