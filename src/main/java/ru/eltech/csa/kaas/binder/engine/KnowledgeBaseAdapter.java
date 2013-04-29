@@ -1,5 +1,6 @@
 package ru.eltech.csa.kaas.binder.engine;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ public class KnowledgeBaseAdapter {
     private Map<String, ServiceType> serviceTypes = new HashMap<>();
     private Map<String, ServiceProvider> serviceProviders = new HashMap<>();
     private Map<String, ServiceImplementation> serviceImplementations = new HashMap<>();
+    private Map<ServiceType, List<ServiceImplementation>> typeImplementationCache = new HashMap<>();
 
     public KnowledgeBaseAdapter(KnowledgeBase knowledgeBase) {
         this.knowledgeBase = knowledgeBase;
@@ -27,6 +29,28 @@ public class KnowledgeBaseAdapter {
         init(serviceTypes, knowledgeBase.getServiceTypes());
         init(serviceProviders, knowledgeBase.getServiceProviders());
         init(serviceImplementations, knowledgeBase.getServiceImplementations());
+    }
+
+    public List<ServiceImplementation> getTypeImplementations(ServiceType serviceType, boolean useCache) {
+        List<ServiceImplementation> result;
+        if (useCache) {
+            result = typeImplementationCache.get(serviceType);
+            if (result != null) {
+                return result;
+            }
+        }
+        result = new ArrayList<>();
+        for (ServiceImplementation impl : knowledgeBase.getServiceImplementations()) {
+            if (impl.getServiceType().equals(serviceType)) {
+                result.add(impl);
+            }
+        }
+        typeImplementationCache.put(serviceType, result);
+        return result;
+    }
+    
+    public List<ServiceImplementation> getTypeImplementations(ServiceType serviceType) {
+        return getTypeImplementations(serviceType, true);
     }
 
     public Criterion findCriterion(String id) {
