@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Estimate extends AbstractKnowledge {
+public class Estimate extends AbstractKnowledge implements Comparable<Estimate> {
 
     @XmlIDREF
     private Criterion criterion;
@@ -67,5 +67,10 @@ public class Estimate extends AbstractKnowledge {
 
     public void setValue(double value) {
         this.value = value;
+    }
+
+    @Override
+    public int compareTo(Estimate o) {
+        return Double.valueOf(value).compareTo(Double.valueOf(o.value));
     }
 }
