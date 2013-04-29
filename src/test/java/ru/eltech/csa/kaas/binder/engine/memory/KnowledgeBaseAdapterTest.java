@@ -1,4 +1,3 @@
-
 package ru.eltech.csa.kaas.binder.engine.memory;
 
 import java.util.Arrays;
@@ -13,12 +12,13 @@ import ru.eltech.csa.kaas.binder.model.ServiceImplementation;
 import ru.eltech.csa.kaas.binder.model.ServiceProvider;
 import ru.eltech.csa.kaas.binder.model.ServiceType;
 
-
 public class KnowledgeBaseAdapterTest {
 
     private static final String SERVICE_PROVIDER_ID = "1";
     private static final String SERVICE_TYPE_ID = "2";
     private static final String SERVICE_IMPLEMENTATION_ID = "1";
+    private static final String SERVICE_IMPLEMENTATION_ID2 = "2";
+    private static final String SERVICE_IMPLEMENTATION_ID3 = "3";
     private static final String CRITERION_ID = "4";
     private static final String ESTIMATE_ID = "5";
     private KnowledgeBaseAdapter adapter;
@@ -30,7 +30,9 @@ public class KnowledgeBaseAdapterTest {
     private List<Estimate> estimateList;
     private ServiceProvider serviceProvider;
     private ServiceType serviceType;
-    private ServiceImplementation serviceImplementation;
+    private ServiceImplementation serviceImplementation1;
+    private ServiceImplementation serviceImplementation2;
+    private ServiceImplementation serviceImplementation3;
     private Criterion criterion;
     private Estimate estimate;
 
@@ -44,9 +46,17 @@ public class KnowledgeBaseAdapterTest {
         serviceType.setId(SERVICE_TYPE_ID);
         serviceTypeList = Arrays.asList(serviceType);
 
-        serviceImplementation = new ServiceImplementation();
-        serviceImplementation.setId(SERVICE_IMPLEMENTATION_ID);
-        serviceImplementationList = Arrays.asList(serviceImplementation);
+        serviceImplementation1 = new ServiceImplementation();
+        serviceImplementation1.setId(SERVICE_IMPLEMENTATION_ID);
+        serviceImplementation1.setServiceProvider(serviceProvider);
+        serviceImplementation1.setServiceType(serviceType);
+        serviceImplementation2 = new ServiceImplementation();
+        serviceImplementation2.setId(SERVICE_IMPLEMENTATION_ID2);
+        serviceImplementation2.setServiceType(serviceType);
+        serviceImplementation3 = new ServiceImplementation();
+        serviceImplementation3.setId(SERVICE_IMPLEMENTATION_ID3);
+        serviceImplementation3.setServiceProvider(serviceProvider);
+        serviceImplementationList = Arrays.asList(serviceImplementation1, serviceImplementation2, serviceImplementation3);
 
         criterion = new Criterion();
         criterion.setId(CRITERION_ID);
@@ -75,7 +85,7 @@ public class KnowledgeBaseAdapterTest {
 
         Assert.assertEquals(serviceProvider, adapter.findServiceProvider(SERVICE_PROVIDER_ID));
         Assert.assertEquals(serviceType, adapter.findServiceType(SERVICE_TYPE_ID));
-        Assert.assertEquals(serviceImplementation, adapter.findServiceImplementation(SERVICE_IMPLEMENTATION_ID));
+        Assert.assertEquals(serviceImplementation1, adapter.findServiceImplementation(SERVICE_IMPLEMENTATION_ID));
         Assert.assertEquals(criterion, adapter.findCriterion(CRITERION_ID));
         Assert.assertEquals(estimate, adapter.findEstimate(ESTIMATE_ID));
     }
@@ -98,5 +108,27 @@ public class KnowledgeBaseAdapterTest {
         KnowledgeBase base = new KnowledgeBase();
 
         adapter = new KnowledgeBaseAdapter(base);
+    }
+
+    @Test
+    public void getTypeImplementationsTest() {
+        adapter = new KnowledgeBaseAdapter(knowledgeBase);
+
+        // second check - for cached value
+        for (int i = 0; i < 2; i++) {
+            List<ServiceImplementation> typeImplementations = adapter.getTypeImplementations(serviceType);
+            Assert.assertEquals(Arrays.asList(serviceImplementation1, serviceImplementation2), typeImplementations);
+        }
+    }
+
+    @Test
+    public void getProviderImplementationsTest() {
+        adapter = new KnowledgeBaseAdapter(knowledgeBase);
+
+        // second check - for cached value
+        for (int i = 0; i < 2; i++) {
+            List<ServiceImplementation> providerImplementations = adapter.getProviderImplementations(serviceProvider);
+            Assert.assertEquals(Arrays.asList(serviceImplementation1, serviceImplementation3), providerImplementations);
+        }
     }
 }
