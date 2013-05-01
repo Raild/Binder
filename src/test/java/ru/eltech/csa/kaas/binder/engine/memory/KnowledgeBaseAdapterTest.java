@@ -1,6 +1,7 @@
 package ru.eltech.csa.kaas.binder.engine.memory;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
@@ -64,6 +65,9 @@ public class KnowledgeBaseAdapterTest {
 
         estimate = new Estimate();
         estimate.setId(ESTIMATE_ID);
+        estimate.setCriterion(criterion);
+        estimate.setServiceImplementations(Arrays.asList(serviceImplementation3));
+        estimate.setServiceProviders(serviceProviderList);
         estimateList = Arrays.asList(estimate);
 
         knowledgeBase = new KnowledgeBase();
@@ -130,5 +134,13 @@ public class KnowledgeBaseAdapterTest {
             List<ServiceImplementation> providerImplementations = adapter.findProviderImplementations(serviceProvider);
             Assert.assertEquals(Arrays.asList(serviceImplementation1, serviceImplementation3), providerImplementations);
         }
+    }
+    
+    @Test
+    public void findImplementationEstimatesTest() {
+        adapter = new KnowledgeBaseAdapter(knowledgeBase);
+        Assert.assertEquals(estimateList, adapter.findImplementationEstimates(serviceImplementation1, criterion));
+        Assert.assertEquals(Collections.emptyList(), adapter.findImplementationEstimates(serviceImplementation2, criterion));
+        Assert.assertEquals(estimateList, adapter.findImplementationEstimates(serviceImplementation3, criterion));
     }
 }
