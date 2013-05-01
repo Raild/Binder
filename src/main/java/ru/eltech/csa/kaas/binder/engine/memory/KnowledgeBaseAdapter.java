@@ -30,6 +30,7 @@ public class KnowledgeBaseAdapter {
     private Map<ServiceType, List<ServiceImplementation>> typeImplementationCache = new HashMap<>();
     private Map<ServiceProvider, List<ServiceImplementation>> providerImplementationCache = new HashMap<>();
     private Map<ServiceImplementation, Map<Criterion, List<Estimate>>> implementationEstimates = new HashMap<>();
+    private Map<Criterion, List<Estimate>> criterionEstimates = new HashMap<>();
 
     public KnowledgeBaseAdapter(KnowledgeBase knowledgeBase) {
         this.knowledgeBase = knowledgeBase;
@@ -109,6 +110,14 @@ public class KnowledgeBaseAdapter {
         return Collections.emptyList();
     }
 
+    public List<Estimate> findCriterionEstimates(Criterion criterion) {
+        List<Estimate> list = criterionEstimates.get(criterion);
+        if (list != null) {
+            return list;
+        }
+        return Collections.emptyList();
+    }
+
     public Criterion findCriterion(String id) {
         return criterions.get(id);
     }
@@ -172,12 +181,13 @@ public class KnowledgeBaseAdapter {
                     throw new IllegalArgumentException("Knowledge base contains item with duplicate id: " + estimate.getId());
                 }
                 estimates.put(estimate.getId(), estimate);
-                doInitEstimates(estimate);
+                putCriterionEstimate(criterionEstimates, estimate.getCriterion(), estimate);
+                initImplementationEstimates(estimate);
             }
         }
     }
 
-    private void doInitEstimates(Estimate estimate) {
+    private void initImplementationEstimates(Estimate estimate) {
         Set<ServiceImplementation> implSet = new HashSet<>();
         List<ServiceImplementation> implementations = estimate.getServiceImplementations();
         if (implementations != null) {
@@ -209,10 +219,15 @@ public class KnowledgeBaseAdapter {
             innerMap = new HashMap<>();
             implementationEstimates.put(serviceImplementation, innerMap);
         }
-        List<Estimate> innerList = innerMap.get(criterion);
+        putCriterionEstimate(innerMap, criterion, estimate);
+
+    }
+
+    private void putCriterionEstimate(Map<Criterion, List<Estimate>> map, Criterion criterion, Estimate estimate) {
+        List<Estimate> innerList = map.get(criterion);
         if (innerList == null) {
             innerList = new ArrayList<>();
-            innerMap.put(criterion, innerList);
+            map.put(criterion, innerList);
         }
         innerList.add(estimate);
     }
