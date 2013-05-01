@@ -116,7 +116,7 @@ public class KnowledgeBaseAdapterTest {
 
         // second check - for cached value
         for (int i = 0; i < 2; i++) {
-            List<ServiceImplementation> typeImplementations = adapter.getTypeImplementations(serviceType);
+            List<ServiceImplementation> typeImplementations = adapter.findTypeImplementations(serviceType);
             Assert.assertEquals(Arrays.asList(serviceImplementation1, serviceImplementation2), typeImplementations);
         }
     }
@@ -127,7 +127,7 @@ public class KnowledgeBaseAdapterTest {
 
         // second check - for cached value
         for (int i = 0; i < 2; i++) {
-            List<ServiceImplementation> providerImplementations = adapter.getProviderImplementations(serviceProvider);
+            List<ServiceImplementation> providerImplementations = adapter.findProviderImplementations(serviceProvider);
             Assert.assertEquals(Arrays.asList(serviceImplementation1, serviceImplementation3), providerImplementations);
         }
     }

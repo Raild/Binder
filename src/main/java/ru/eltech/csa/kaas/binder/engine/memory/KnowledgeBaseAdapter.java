@@ -1,6 +1,7 @@
 package ru.eltech.csa.kaas.binder.engine.memory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +16,9 @@ import ru.eltech.csa.kaas.binder.model.ServiceImplementation;
 import ru.eltech.csa.kaas.binder.model.ServiceProvider;
 import ru.eltech.csa.kaas.binder.model.ServiceType;
 
+/**
+ * Provides easy access to knowledge via additional methods.
+ */
 public class KnowledgeBaseAdapter {
 
     private KnowledgeBase knowledgeBase;
@@ -37,20 +41,72 @@ public class KnowledgeBaseAdapter {
         initEstimates(knowledgeBase.getEstimates());
     }
 
-    public List<ServiceImplementation> getTypeImplementations(ServiceType serviceType, boolean useCache) {
+    /**
+     * Finds all implementations of the given service type in knowledge base.
+     *
+     * @param serviceProvider the service type
+     * @param useCache if false - the knowledge base is processed for each
+     * method call
+     * @return see description
+     */
+    public List<ServiceImplementation> findTypeImplementations(ServiceType serviceType, boolean useCache) {
         return doGetImplementations(typeImplementationCache, serviceType, SERVICE_TYPE, useCache);
     }
 
-    public List<ServiceImplementation> getTypeImplementations(ServiceType serviceType) {
-        return getTypeImplementations(serviceType, true);
+    /**
+     * Finds all implementations of the given service type in knowledge base.
+     * Uses cache.
+     *
+     * @param serviceProvider the service type
+     * @param useCache if false - the knowledge base is processed for each
+     * method call
+     * @return see description
+     */
+    public List<ServiceImplementation> findTypeImplementations(ServiceType serviceType) {
+        return findTypeImplementations(serviceType, true);
     }
 
-    public List<ServiceImplementation> getProviderImplementations(ServiceProvider serviceProvider, boolean useCache) {
+    /**
+     * Finds all implementations of the given service provider in knowledge
+     * base.
+     *
+     * @param serviceProvider the service provider
+     * @param useCache if false - the knowledge base is processed for each
+     * method call
+     * @return see description
+     */
+    public List<ServiceImplementation> findProviderImplementations(ServiceProvider serviceProvider, boolean useCache) {
         return doGetImplementations(providerImplementationCache, serviceProvider, SERVICE_PROVIDER, useCache);
     }
 
-    public List<ServiceImplementation> getProviderImplementations(ServiceProvider serviceProvider) {
-        return getProviderImplementations(serviceProvider, true);
+    /**
+     * Finds all implementations of the given service provider in knowledge
+     * base. Uses cache.
+     *
+     * @param serviceProvider the service provider
+     * @return see description
+     */
+    public List<ServiceImplementation> findProviderImplementations(ServiceProvider serviceProvider) {
+        return findProviderImplementations(serviceProvider, true);
+    }
+
+    /**
+     * Finds all estimates of the given service implementation by the given
+     * criterion in knowledge base.
+     *
+     * @param impl the service implementation
+     * @param crit the criterion
+     * @return see description
+     */
+    public List<Estimate> findImplementationEstimates(ServiceImplementation impl, Criterion crit) {
+        Map<Criterion, List<Estimate>> innerMap = implementationEstimates.get(impl);
+        if (innerMap != null) {
+            List<Estimate> list = innerMap.get(crit);
+            if (list != null) {
+                return list;
+            }
+        }
+        return Collections.emptyList();
     }
 
     public Criterion findCriterion(String id) {
@@ -131,14 +187,14 @@ public class KnowledgeBaseAdapter {
         List<ServiceProvider> providers = estimate.getServiceProviders();
         if (providers != null) {
             for (ServiceProvider provider : providers) {
-                implSet.addAll(getProviderImplementations(provider));
+                implSet.addAll(findProviderImplementations(provider));
             }
         }
 
         List<ServiceType> types = estimate.getServiceTypes();
         if (types != null) {
             for (ServiceType type : types) {
-                implSet.addAll(getTypeImplementations(type));
+                implSet.addAll(findTypeImplementations(type));
             }
         }
 
