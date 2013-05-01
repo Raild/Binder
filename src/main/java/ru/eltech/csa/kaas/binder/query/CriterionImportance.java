@@ -1,18 +1,16 @@
 package ru.eltech.csa.kaas.binder.query;
 
-import ru.eltech.csa.kaas.binder.model.Criterion;
-
 public class CriterionImportance {
 
-    private Criterion criterion;
+    private String criterionId;
     private double importanceValue;
 
-    public Criterion getCriterion() {
-        return criterion;
+    public String getCriterion() {
+        return criterionId;
     }
 
-    public void setCriterion(Criterion criterion) {
-        this.criterion = criterion;
+    public void setCriterion(String criterion) {
+        this.criterionId = criterion;
     }
 
     public double getImportanceValue() {

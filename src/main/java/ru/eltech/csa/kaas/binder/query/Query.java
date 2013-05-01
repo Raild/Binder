@@ -1,20 +1,20 @@
 package ru.eltech.csa.kaas.binder.query;
 
+import ru.eltech.csa.kaas.binder.query.condition.Condition;
 import java.util.List;
-import ru.eltech.csa.kaas.binder.model.ServiceType;
 
-public class Query{
+public class Query {
 
-    private List<ServiceType> serviceTypes;
+    private List<String> serviceTypesId;
     private List<CriterionImportance> criterionImportances;
     private List<Condition> conditions;
 
-    public List<ServiceType> getServiceTypes() {
-        return serviceTypes;
+    public List<String> getServiceTypes() {
+        return serviceTypesId;
     }
 
-    public void setServiceTypes(List<ServiceType> serviceTypes) {
-        this.serviceTypes = serviceTypes;
+    public void setServiceTypes(List<String> serviceTypes) {
+        this.serviceTypesId = serviceTypes;
     }
 
     public List<CriterionImportance> getCriterionImportances() {
