@@ -1,6 +1,4 @@
-package ru.eltech.csa.kaas.binder.query.condition;
-
-import ru.eltech.csa.kaas.binder.query.Operator;
+package ru.eltech.csa.kaas.binder.query;
 
 public class Condition {
 
