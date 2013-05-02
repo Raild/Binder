@@ -1,19 +1,21 @@
 package ru.eltech.csa.kaas.binder.query;
 
 import java.util.List;
+import ru.eltech.csa.kaas.binder.platform.config.BinderConfig;
 
 public class Query {
 
     private List<String> serviceTypesId;
     private List<CriterionImportance> criterionImportances;
     private List<Condition> conditions;
+    private BinderConfig config;
 
-    public List<String> getServiceTypes() {
+    public List<String> getServiceTypesId() {
         return serviceTypesId;
     }
 
-    public void setServiceTypes(List<String> serviceTypes) {
-        this.serviceTypesId = serviceTypes;
+    public void setServiceTypesId(List<String> serviceTypesId) {
+        this.serviceTypesId = serviceTypesId;
     }
 
     public List<CriterionImportance> getCriterionImportances() {
@@ -30,5 +32,13 @@ public class Query {
 
     public void setConditions(List<Condition> conditions) {
         this.conditions = conditions;
+    }
+
+    public BinderConfig getConfig() {
+        return config;
+    }
+
+    public void setConfig(BinderConfig config) {
+        this.config = config;
     }
 }
