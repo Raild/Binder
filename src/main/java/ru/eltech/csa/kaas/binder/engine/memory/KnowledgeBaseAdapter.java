@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import ru.eltech.csa.kaas.binder.model.AbstractEstimatedKnowledge;
 import ru.eltech.csa.kaas.binder.model.AbstractKnowledge;
 import ru.eltech.csa.kaas.binder.model.Criterion;
 import ru.eltech.csa.kaas.binder.model.Estimate;
@@ -27,7 +26,7 @@ public class KnowledgeBaseAdapter {
     private Map<String, ServiceType> serviceTypes = new HashMap<>();
     private Map<String, ServiceProvider> serviceProviders = new HashMap<>();
     private Map<String, ServiceImplementation> serviceImplementations = new HashMap<>();
-    private Map<ServiceType, List<ServiceImplementation>> typeImplementationCache = new HashMap<>();
+    private Map<ServiceType, Set<ServiceImplementation>> typeImplementations = new HashMap<>();
     private Map<ServiceProvider, List<ServiceImplementation>> providerImplementationCache = new HashMap<>();
     private Map<ServiceImplementation, Map<Criterion, List<Estimate>>> implementationEstimates = new HashMap<>();
     private Map<Criterion, List<Estimate>> criterionEstimates = new HashMap<>();
@@ -38,7 +37,7 @@ public class KnowledgeBaseAdapter {
         initIdMap(criterions, knowledgeBase.getCriterions(), EMPTY_INIT_OPERATIONS);
         initIdMap(serviceTypes, knowledgeBase.getServiceTypes(), TYPE_INIT_OPERATIONS);
         initIdMap(serviceProviders, knowledgeBase.getServiceProviders(), EMPTY_INIT_OPERATIONS);
-        initIdMap(serviceImplementations, knowledgeBase.getServiceImplementations(), EMPTY_INIT_OPERATIONS);
+        initIdMap(serviceImplementations, knowledgeBase.getServiceImplementations(), IMPL_INIT_OPERATIONS);
         initIdMap(estimates, knowledgeBase.getEstimates(), ESTIMATE_INIT_OPERATIONS);
     }
 
@@ -46,25 +45,14 @@ public class KnowledgeBaseAdapter {
      * Finds all implementations of the given service type in knowledge base.
      *
      * @param serviceProvider the service type
-     * @param useCache if false - the knowledge base is processed for each
-     * method call
      * @return see description
      */
-    public List<ServiceImplementation> findTypeImplementations(ServiceType serviceType, boolean useCache) {
-        return doGetImplementations(typeImplementationCache, serviceType, SERVICE_TYPE, useCache);
-    }
-
-    /**
-     * Finds all implementations of the given service type in knowledge base.
-     * Uses cache.
-     *
-     * @param serviceProvider the service type
-     * @param useCache if false - the knowledge base is processed for each
-     * method call
-     * @return see description
-     */
-    public List<ServiceImplementation> findTypeImplementations(ServiceType serviceType) {
-        return findTypeImplementations(serviceType, true);
+    public Set<ServiceImplementation> findTypeImplementations(ServiceType serviceType) {
+        Set<ServiceImplementation> set = typeImplementations.get(serviceType);
+        if (set != null) {
+            return set;
+        }
+        return Collections.emptySet();
     }
 
     /**
@@ -77,7 +65,21 @@ public class KnowledgeBaseAdapter {
      * @return see description
      */
     public List<ServiceImplementation> findProviderImplementations(ServiceProvider serviceProvider, boolean useCache) {
-        return doGetImplementations(providerImplementationCache, serviceProvider, SERVICE_PROVIDER, useCache);
+        List<ServiceImplementation> result;
+        if (useCache) {
+            result = providerImplementationCache.get(serviceProvider);
+            if (result != null) {
+                return result;
+            }
+        }
+        result = new ArrayList<>();
+        for (ServiceImplementation impl : knowledgeBase.getServiceImplementations()) {
+            if (serviceProvider.equals(impl.getServiceProvider())) {
+                result.add(impl);
+            }
+        }
+        providerImplementationCache.put(serviceProvider, result);
+        return result;
     }
 
     /**
@@ -215,24 +217,6 @@ public class KnowledgeBaseAdapter {
         innerList.add(estimate);
     }
 
-    private <T extends AbstractEstimatedKnowledge> List<ServiceImplementation> doGetImplementations(
-            Map<T, List<ServiceImplementation>> destination, T target,
-            ImplementationsProcessor implProcessor, boolean useCache) {
-        List<ServiceImplementation> result;
-        if (useCache) {
-            result = destination.get(target);
-            if (result != null) {
-                return result;
-            }
-        }
-        result = new ArrayList<>();
-        for (ServiceImplementation impl : knowledgeBase.getServiceImplementations()) {
-            implProcessor.process(impl, target, result);
-        }
-        destination.put(target, result);
-        return result;
-    }
-
     private void initChilds(ServiceType type) {
         ServiceType parent = type.getParent();
         if (parent != null) {
@@ -245,40 +229,25 @@ public class KnowledgeBaseAdapter {
         }
     }
 
-    /**
-     * Process implementations within caching.
-     */
-    private interface ImplementationsProcessor {
-
-        void process(ServiceImplementation impl, AbstractEstimatedKnowledge target, List<ServiceImplementation> result);
+    private void initTypeImplementations(ServiceImplementation impl) {
+        ServiceType type = impl.getServiceType();
+        if (type != null) {
+            doInitTypeImplementations(impl, type);
+        }
     }
-    private final ImplementationsProcessor SERVICE_TYPE = new ImplementationsProcessor() {
-        @Override
-        public void process(ServiceImplementation impl, AbstractEstimatedKnowledge target, List<ServiceImplementation> result) {
-            ServiceType type = (ServiceType) target;
-            if (type.equals(impl.getServiceType())) {
-                doProcess(impl, type, result);
-            }
-        }
 
-        private void doProcess(ServiceImplementation impl, ServiceType type, List<ServiceImplementation> result) {
-            result.add(impl);
-            Set<ServiceType> set = typeChilds.get(type);
-            if (set != null) {
-                for (ServiceType t : set) {
-                    doProcess(impl, t, result);
-                }
-            }
+    private void doInitTypeImplementations(ServiceImplementation impl, ServiceType type) {
+        Set<ServiceImplementation> set = typeImplementations.get(type);
+        if (set == null) {
+            set = new HashSet<>();
+            typeImplementations.put(type, set);
         }
-    };
-    private static final ImplementationsProcessor SERVICE_PROVIDER = new ImplementationsProcessor() {
-        @Override
-        public void process(ServiceImplementation impl, AbstractEstimatedKnowledge target, List<ServiceImplementation> result) {
-            if (target.equals(impl.getServiceProvider())) {
-                result.add(impl);
-            }
+        set.add(impl);
+        ServiceType parent = type.getParent();
+        if (parent != null) {
+            doInitTypeImplementations(impl, parent);
         }
-    };
+    }
 
     private interface PostInitOperations {
 
@@ -302,6 +271,13 @@ public class KnowledgeBaseAdapter {
         public void doOperations(AbstractKnowledge item) {
             ServiceType type = (ServiceType) item;
             initChilds(type);
+        }
+    };
+    private final PostInitOperations IMPL_INIT_OPERATIONS = new PostInitOperations() {
+        @Override
+        public void doOperations(AbstractKnowledge item) {
+            ServiceImplementation impl = (ServiceImplementation) item;
+            initTypeImplementations(impl);
         }
     };
 }

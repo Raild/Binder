@@ -2,7 +2,9 @@ package ru.eltech.csa.kaas.binder.engine.memory;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -133,13 +135,15 @@ public class KnowledgeBaseAdapterTest {
     @Test
     public void getTypeImplementationsTest() {
         adapter = new KnowledgeBaseAdapter(knowledgeBase);
+        HashSet<ServiceImplementation> expectedSet = new HashSet<>();
+        expectedSet.add(serviceImplementation1);
+        expectedSet.add(serviceImplementation2);
+        expectedSet.add(serviceImplementation4);
 
         // second check - for cached value
         for (int i = 0; i < 2; i++) {
-            List<ServiceImplementation> typeImplementations = adapter.findTypeImplementations(serviceType1);
-            Assert.assertEquals(
-                    Arrays.asList(serviceImplementation1, serviceImplementation2, serviceImplementation4),
-                    typeImplementations);
+            Set<ServiceImplementation> typeImplementations = adapter.findTypeImplementations(serviceType1);
+            Assert.assertEquals(expectedSet, typeImplementations);
         }
     }
 
