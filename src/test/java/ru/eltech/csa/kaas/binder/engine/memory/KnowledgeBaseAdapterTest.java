@@ -14,12 +14,15 @@ import ru.eltech.csa.kaas.binder.model.ServiceProvider;
 import ru.eltech.csa.kaas.binder.model.ServiceType;
 
 public class KnowledgeBaseAdapterTest {
-    
-    private static final String SERVICE_PROVIDER_ID = "1";
-    private static final String SERVICE_TYPE_ID = "2";
-    private static final String SERVICE_IMPLEMENTATION_ID = "1";
-    private static final String SERVICE_IMPLEMENTATION_ID2 = "2";
-    private static final String SERVICE_IMPLEMENTATION_ID3 = "3";
+
+    private static final String SERVICE_PROVIDER_ID = "p1";
+    private static final String SERVICE_TYPE_ID1 = "t1";
+    private static final String SERVICE_TYPE_ID2 = "t2";
+    private static final String SERVICE_TYPE_ID3 = "t3";
+    private static final String SERVICE_IMPLEMENTATION_ID = "i1";
+    private static final String SERVICE_IMPLEMENTATION_ID2 = "i2";
+    private static final String SERVICE_IMPLEMENTATION_ID3 = "i3";
+    private static final String SERVICE_IMPLEMENTATION_ID4 = "i4";
     private static final String CRITERION_ID = "4";
     private static final String ESTIMATE_ID = "5";
     private KnowledgeBaseAdapter adapter;
@@ -30,46 +33,59 @@ public class KnowledgeBaseAdapterTest {
     private List<Criterion> criterionList;
     private List<Estimate> estimateList;
     private ServiceProvider serviceProvider;
-    private ServiceType serviceType;
+    private ServiceType serviceType1;
+    private ServiceType serviceType2;
+    private ServiceType serviceType3;
     private ServiceImplementation serviceImplementation1;
     private ServiceImplementation serviceImplementation2;
     private ServiceImplementation serviceImplementation3;
+    private ServiceImplementation serviceImplementation4;
     private Criterion criterion;
     private Estimate estimate;
-    
+
     @Before
     public void setUp() {
         serviceProvider = new ServiceProvider();
         serviceProvider.setId(SERVICE_PROVIDER_ID);
         serviceProviderList = Arrays.asList(serviceProvider);
-        
-        serviceType = new ServiceType();
-        serviceType.setId(SERVICE_TYPE_ID);
-        serviceTypeList = Arrays.asList(serviceType);
-        
+
+        serviceType1 = new ServiceType();
+        serviceType1.setId(SERVICE_TYPE_ID1);
+        serviceType2 = new ServiceType();
+        serviceType2.setId(SERVICE_TYPE_ID2);
+        serviceType2.setParent(serviceType1);
+        serviceType3 = new ServiceType();
+        serviceType3.setId(SERVICE_TYPE_ID3);
+        serviceType3.setParent(serviceType2);
+        serviceTypeList = Arrays.asList(serviceType1, serviceType2, serviceType3);
+
         serviceImplementation1 = new ServiceImplementation();
         serviceImplementation1.setId(SERVICE_IMPLEMENTATION_ID);
         serviceImplementation1.setServiceProvider(serviceProvider);
-        serviceImplementation1.setServiceType(serviceType);
+        serviceImplementation1.setServiceType(serviceType1);
         serviceImplementation2 = new ServiceImplementation();
         serviceImplementation2.setId(SERVICE_IMPLEMENTATION_ID2);
-        serviceImplementation2.setServiceType(serviceType);
+        serviceImplementation2.setServiceType(serviceType1);
         serviceImplementation3 = new ServiceImplementation();
         serviceImplementation3.setId(SERVICE_IMPLEMENTATION_ID3);
         serviceImplementation3.setServiceProvider(serviceProvider);
-        serviceImplementationList = Arrays.asList(serviceImplementation1, serviceImplementation2, serviceImplementation3);
-        
+        serviceImplementation4 = new ServiceImplementation();
+        serviceImplementation4.setId(SERVICE_IMPLEMENTATION_ID4);
+        serviceImplementation4.setServiceType(serviceType3);
+        serviceImplementationList = Arrays.asList(serviceImplementation1,
+                serviceImplementation2, serviceImplementation3, serviceImplementation4);
+
         criterion = new Criterion();
         criterion.setId(CRITERION_ID);
         criterionList = Arrays.asList(criterion);
-        
+
         estimate = new Estimate();
         estimate.setId(ESTIMATE_ID);
         estimate.setCriterion(criterion);
         estimate.setServiceImplementations(Arrays.asList(serviceImplementation3));
         estimate.setServiceProviders(serviceProviderList);
         estimateList = Arrays.asList(estimate);
-        
+
         knowledgeBase = new KnowledgeBase();
         knowledgeBase.setServiceProviders(serviceProviderList);
         knowledgeBase.setServiceTypes(serviceTypeList);
@@ -77,7 +93,7 @@ public class KnowledgeBaseAdapterTest {
         knowledgeBase.setCriterions(criterionList);
         knowledgeBase.setEstimates(estimateList);
     }
-    
+
     @Test
     public void adapterInitTest() {
         adapter = new KnowledgeBaseAdapter(knowledgeBase);
@@ -86,14 +102,14 @@ public class KnowledgeBaseAdapterTest {
         Assert.assertEquals(serviceImplementationList, adapter.getServiceImplementations());
         Assert.assertEquals(criterionList, adapter.getCriterions());
         Assert.assertEquals(estimateList, adapter.getEstimates());
-        
+
         Assert.assertEquals(serviceProvider, adapter.findServiceProvider(SERVICE_PROVIDER_ID));
-        Assert.assertEquals(serviceType, adapter.findServiceType(SERVICE_TYPE_ID));
+        Assert.assertEquals(serviceType1, adapter.findServiceType(SERVICE_TYPE_ID1));
         Assert.assertEquals(serviceImplementation1, adapter.findServiceImplementation(SERVICE_IMPLEMENTATION_ID));
         Assert.assertEquals(criterion, adapter.findCriterion(CRITERION_ID));
         Assert.assertEquals(estimate, adapter.findEstimate(ESTIMATE_ID));
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void duplicateIdTest() {
         Estimate estimate1 = new Estimate();
@@ -103,28 +119,30 @@ public class KnowledgeBaseAdapterTest {
         List<Estimate> estimates = Arrays.asList(estimate1, estimate2);
         KnowledgeBase base = new KnowledgeBase();
         base.setEstimates(estimates);
-        
+
         adapter = new KnowledgeBaseAdapter(base);
     }
-    
+
     @Test
     public void emptyBaseTest() {
         KnowledgeBase base = new KnowledgeBase();
-        
+
         adapter = new KnowledgeBaseAdapter(base);
     }
-    
+
     @Test
     public void getTypeImplementationsTest() {
         adapter = new KnowledgeBaseAdapter(knowledgeBase);
 
         // second check - for cached value
         for (int i = 0; i < 2; i++) {
-            List<ServiceImplementation> typeImplementations = adapter.findTypeImplementations(serviceType);
-            Assert.assertEquals(Arrays.asList(serviceImplementation1, serviceImplementation2), typeImplementations);
+            List<ServiceImplementation> typeImplementations = adapter.findTypeImplementations(serviceType1);
+            Assert.assertEquals(
+                    Arrays.asList(serviceImplementation1, serviceImplementation2, serviceImplementation4),
+                    typeImplementations);
         }
     }
-    
+
     @Test
     public void getProviderImplementationsTest() {
         adapter = new KnowledgeBaseAdapter(knowledgeBase);
@@ -135,7 +153,7 @@ public class KnowledgeBaseAdapterTest {
             Assert.assertEquals(Arrays.asList(serviceImplementation1, serviceImplementation3), providerImplementations);
         }
     }
-    
+
     @Test
     public void findImplementationEstimatesTest() {
         adapter = new KnowledgeBaseAdapter(knowledgeBase);
@@ -143,7 +161,7 @@ public class KnowledgeBaseAdapterTest {
         Assert.assertEquals(Collections.emptyList(), adapter.findImplementationEstimates(serviceImplementation2, criterion));
         Assert.assertEquals(estimateList, adapter.findImplementationEstimates(serviceImplementation3, criterion));
     }
-    
+
     @Test
     public void findCriterionEstimatesTest() {
         Criterion crit = new Criterion();
@@ -157,11 +175,11 @@ public class KnowledgeBaseAdapterTest {
         Estimate es3 = new Estimate();
         es3.setId("4");
         es3.setCriterion(criterion);
-        
+
         KnowledgeBase base = new KnowledgeBase();
         base.setCriterions(Arrays.asList(crit));
         base.setEstimates(Arrays.asList(es1, es2, es3));
-        
+
         adapter = new KnowledgeBaseAdapter(base);
         Assert.assertEquals(Arrays.asList(es1, es2), adapter.findCriterionEstimates(crit));
     }

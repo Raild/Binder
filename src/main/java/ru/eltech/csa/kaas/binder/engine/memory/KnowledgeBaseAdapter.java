@@ -31,15 +31,15 @@ public class KnowledgeBaseAdapter {
     private Map<ServiceProvider, List<ServiceImplementation>> providerImplementationCache = new HashMap<>();
     private Map<ServiceImplementation, Map<Criterion, List<Estimate>>> implementationEstimates = new HashMap<>();
     private Map<Criterion, List<Estimate>> criterionEstimates = new HashMap<>();
+    private Map<ServiceType, Set<ServiceType>> typeChilds = new HashMap<>();
 
     public KnowledgeBaseAdapter(KnowledgeBase knowledgeBase) {
         this.knowledgeBase = knowledgeBase;
-        initIdMap(criterions, knowledgeBase.getCriterions());
-        initIdMap(serviceTypes, knowledgeBase.getServiceTypes());
-        initIdMap(serviceProviders, knowledgeBase.getServiceProviders());
-        initIdMap(serviceImplementations, knowledgeBase.getServiceImplementations());
-
-        initEstimates(knowledgeBase.getEstimates());
+        initIdMap(criterions, knowledgeBase.getCriterions(), EMPTY_INIT_OPERATIONS);
+        initIdMap(serviceTypes, knowledgeBase.getServiceTypes(), TYPE_INIT_OPERATIONS);
+        initIdMap(serviceProviders, knowledgeBase.getServiceProviders(), EMPTY_INIT_OPERATIONS);
+        initIdMap(serviceImplementations, knowledgeBase.getServiceImplementations(), EMPTY_INIT_OPERATIONS);
+        initIdMap(estimates, knowledgeBase.getEstimates(), ESTIMATE_INIT_OPERATIONS);
     }
 
     /**
@@ -158,31 +158,14 @@ public class KnowledgeBaseAdapter {
         return knowledgeBase.getServiceImplementations();
     }
 
-    private <T extends AbstractKnowledge> void initIdMap(Map<String, ? super T> map, List<? extends T> list) {
+    private <T extends AbstractKnowledge> void initIdMap(Map<String, ? super T> map, List<? extends T> list, PostInitOperations post) {
         if (list != null) {
             for (T item : list) {
                 if (map.containsKey(item.getId())) {
                     throw new IllegalArgumentException("Knowledge base contains item with duplicate id: " + item.getId());
                 }
                 map.put(item.getId(), item);
-            }
-        }
-    }
-
-    /**
-     * Copy of initIdMap method with additional initialization for each estimate
-     *
-     * @param list
-     */
-    private void initEstimates(List<Estimate> list) {
-        if (list != null) {
-            for (Estimate estimate : list) {
-                if (estimates.containsKey(estimate.getId())) {
-                    throw new IllegalArgumentException("Knowledge base contains item with duplicate id: " + estimate.getId());
-                }
-                estimates.put(estimate.getId(), estimate);
-                putCriterionEstimate(criterionEstimates, estimate.getCriterion(), estimate);
-                initImplementationEstimates(estimate);
+                post.doOperations(item);
             }
         }
     }
@@ -234,7 +217,7 @@ public class KnowledgeBaseAdapter {
 
     private <T extends AbstractEstimatedKnowledge> List<ServiceImplementation> doGetImplementations(
             Map<T, List<ServiceImplementation>> destination, T target,
-            ComparedField comparedField, boolean useCache) {
+            ImplementationsProcessor implProcessor, boolean useCache) {
         List<ServiceImplementation> result;
         if (useCache) {
             result = destination.get(target);
@@ -244,28 +227,81 @@ public class KnowledgeBaseAdapter {
         }
         result = new ArrayList<>();
         for (ServiceImplementation impl : knowledgeBase.getServiceImplementations()) {
-            if (comparedField.compare(impl, target)) {
-                result.add(impl);
-            }
+            implProcessor.process(impl, target, result);
         }
         destination.put(target, result);
         return result;
     }
 
-    private interface ComparedField {
-
-        boolean compare(ServiceImplementation impl, AbstractEstimatedKnowledge target);
+    private void initChilds(ServiceType type) {
+        ServiceType parent = type.getParent();
+        if (parent != null) {
+            Set<ServiceType> set = typeChilds.get(parent);
+            if (set == null) {
+                set = new HashSet<>();
+                typeChilds.put(parent, set);
+            }
+            set.add(type);
+        }
     }
-    private static final ComparedField SERVICE_TYPE = new ComparedField() {
+
+    /**
+     * Process implementations within caching.
+     */
+    private interface ImplementationsProcessor {
+
+        void process(ServiceImplementation impl, AbstractEstimatedKnowledge target, List<ServiceImplementation> result);
+    }
+    private final ImplementationsProcessor SERVICE_TYPE = new ImplementationsProcessor() {
         @Override
-        public boolean compare(ServiceImplementation impl, AbstractEstimatedKnowledge target) {
-            return target.equals(impl.getServiceType());
+        public void process(ServiceImplementation impl, AbstractEstimatedKnowledge target, List<ServiceImplementation> result) {
+            ServiceType type = (ServiceType) target;
+            if (type.equals(impl.getServiceType())) {
+                doProcess(impl, type, result);
+            }
+        }
+
+        private void doProcess(ServiceImplementation impl, ServiceType type, List<ServiceImplementation> result) {
+            result.add(impl);
+            Set<ServiceType> set = typeChilds.get(type);
+            if (set != null) {
+                for (ServiceType t : set) {
+                    doProcess(impl, t, result);
+                }
+            }
         }
     };
-    private static final ComparedField SERVICE_PROVIDER = new ComparedField() {
+    private static final ImplementationsProcessor SERVICE_PROVIDER = new ImplementationsProcessor() {
         @Override
-        public boolean compare(ServiceImplementation impl, AbstractEstimatedKnowledge target) {
-            return target.equals(impl.getServiceProvider());
+        public void process(ServiceImplementation impl, AbstractEstimatedKnowledge target, List<ServiceImplementation> result) {
+            if (target.equals(impl.getServiceProvider())) {
+                result.add(impl);
+            }
+        }
+    };
+
+    private interface PostInitOperations {
+
+        void doOperations(AbstractKnowledge item);
+    }
+    private static final PostInitOperations EMPTY_INIT_OPERATIONS = new PostInitOperations() {
+        @Override
+        public void doOperations(AbstractKnowledge item) {
+        }
+    };
+    private final PostInitOperations ESTIMATE_INIT_OPERATIONS = new PostInitOperations() {
+        @Override
+        public void doOperations(AbstractKnowledge item) {
+            Estimate estimate = (Estimate) item;
+            putCriterionEstimate(criterionEstimates, estimate.getCriterion(), estimate);
+            initImplementationEstimates(estimate);
+        }
+    };
+    private final PostInitOperations TYPE_INIT_OPERATIONS = new PostInitOperations() {
+        @Override
+        public void doOperations(AbstractKnowledge item) {
+            ServiceType type = (ServiceType) item;
+            initChilds(type);
         }
     };
 }
