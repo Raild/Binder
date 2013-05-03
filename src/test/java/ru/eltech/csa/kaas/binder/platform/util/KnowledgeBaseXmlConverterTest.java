@@ -114,6 +114,7 @@ public class KnowledgeBaseXmlConverterTest {
         Criterion criterion = new Criterion();
         criterion.setId("cr1");
         criterion.setURI("http://example.com/criterion");
+        criterion.setImportance(0.78);
 
         Estimate es1 = new Estimate();
         es1.setId("es1");
