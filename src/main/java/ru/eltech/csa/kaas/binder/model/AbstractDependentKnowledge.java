@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AbstractDependentKnowledge extends AbstractEstimatedKnowledge {
+public class AbstractDependentKnowledge extends AbstractKnowledge {
 
     @XmlElementWrapper
     @XmlElement( name="dependency" )

@@ -124,12 +124,6 @@ public class KnowledgeBaseXmlConverterTest {
         es1.setValue(0.9);
         es1.setURI("http://example.com/estimate");
 
-        provider.setEstimates(asList(es1));
-        serviceType1.setEstimates(asList(es1));
-        serviceType2.setEstimates(asList(es1));
-        impl1.setEstimates(asList(es1));
-        impl2.setEstimates(asList(es1));
-
         KnowledgeBase base = new KnowledgeBase();
         base.setServiceProviders(asList(provider));
         base.setServiceTypes(asList(serviceType1, serviceType2));
