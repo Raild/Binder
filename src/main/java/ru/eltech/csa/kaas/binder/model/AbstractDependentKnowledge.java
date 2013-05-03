@@ -11,28 +11,16 @@ import javax.xml.bind.annotation.XmlIDREF;
 public class AbstractDependentKnowledge extends AbstractEstimatedKnowledge {
 
     @XmlElementWrapper
-    @XmlElement( name="typeDependency" )
+    @XmlElement( name="dependency" )
     @XmlIDREF
-    private List<ServiceType> typeDependencies;
-    
-    @XmlElementWrapper
-    @XmlElement( name="implementationDependency" )
-    @XmlIDREF
-    private List<ServiceImplementation> implementationDependencies;
+    private List<ServiceType> dependencies;
 
-    public List<ServiceType> getTypeDependencies() {
-        return typeDependencies;
+    public List<ServiceType> getDependencies() {
+        return dependencies;
     }
 
-    public void setTypeDependencies(List<ServiceType> typeDependencies) {
-        this.typeDependencies = typeDependencies;
+    public void setDependencies(List<ServiceType> dependencies) {
+        this.dependencies = dependencies;
     }
 
-    public List<ServiceImplementation> getImplementationDependencies() {
-        return implementationDependencies;
-    }
-
-    public void setImplementationDependencies(List<ServiceImplementation> implementationDependencies) {
-        this.implementationDependencies = implementationDependencies;
-    }
 }

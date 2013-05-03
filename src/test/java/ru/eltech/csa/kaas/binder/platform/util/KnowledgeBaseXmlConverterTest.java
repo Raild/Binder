@@ -96,7 +96,7 @@ public class KnowledgeBaseXmlConverterTest {
         serviceType2.setId("st2");
         serviceType2.setURI("http://example.com/serviceType2");
 
-        serviceType2.setTypeDependencies(asList(serviceType1));
+        serviceType2.setDependencies(asList(serviceType1));
         serviceType1.setParent(serviceType2);
 
         ServiceImplementation impl1 = new ServiceImplementation();
@@ -104,16 +104,12 @@ public class KnowledgeBaseXmlConverterTest {
         impl1.setServiceProvider(provider);
         impl1.setServiceType(serviceType1);
         impl1.setURI("http://example.com/impl1");
-        impl1.setTypeDependencies(asList(serviceType1));
+        impl1.setDependencies(asList(serviceType1));
         ServiceImplementation impl2 = new ServiceImplementation();
         impl2.setId("si2");
         impl2.setServiceProvider(provider);
         impl2.setServiceType(serviceType2);
         impl2.setURI("http://example.com/impl2");
-        impl2.setImplementationDependencies(asList(impl1));
-
-        serviceType2.setImplementationDependencies(asList(impl1));
-        serviceType1.setImplementationDependencies(asList(impl2));
 
         Criterion criterion = new Criterion();
         criterion.setId("cr1");
