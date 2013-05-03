@@ -1,14 +1,19 @@
 package ru.eltech.csa.kaas.binder.model;
 
-public class Criterion extends AbstractKnowledge {
+public class Criterion extends AbstractKnowledge implements Comparable<Criterion> {
 
-    private double importance;
+    private Double importance;
 
-    public double getImportance() {
+    public Double getImportance() {
         return importance;
     }
 
-    public void setImportance(double importance) {
+    public void setImportance(Double importance) {
         this.importance = importance;
+    }
+    
+    @Override
+    public int compareTo(Criterion crit) {
+        return importance.compareTo(crit.importance);
     }
 }

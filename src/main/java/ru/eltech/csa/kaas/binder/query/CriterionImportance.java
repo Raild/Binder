@@ -1,9 +1,9 @@
 package ru.eltech.csa.kaas.binder.query;
 
-public class CriterionImportance implements Comparable<CriterionImportance> {
+public class CriterionImportance {
 
     private String criterionId;
-    private double importanceValue;
+    private Double importanceValue;
 
     public String getCriterion() {
         return criterionId;
@@ -13,16 +13,11 @@ public class CriterionImportance implements Comparable<CriterionImportance> {
         this.criterionId = criterion;
     }
 
-    public double getImportanceValue() {
+    public Double getImportanceValue() {
         return importanceValue;
     }
 
-    public void setImportanceValue(double importanceValue) {
+    public void setImportanceValue(Double importanceValue) {
         this.importanceValue = importanceValue;
-    }
-
-    @Override
-    public int compareTo(CriterionImportance ci) {
-        return Double.compare(importanceValue, ci.importanceValue);
     }
 }
