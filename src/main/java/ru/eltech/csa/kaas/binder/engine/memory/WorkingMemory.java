@@ -36,7 +36,7 @@ public class WorkingMemory {
     /**
      * Service types queried by the user.
      */
-    private Set<ServiceType> requiredTypes;
+    private Set<ServiceType> requiredTypes = new HashSet<>();
     /**
      * Set of corrupt estimates. If even one of them is satisfied,
      * implementation proposition will break the query conditions.
@@ -58,6 +58,8 @@ public class WorkingMemory {
         criterions = orderCriterions(query, knowledgeBase);
         criterionConditions = initCriterionConditions(query, knowledgeBase);
         alternatives = initAlternatives(query, knowledgeBase);
+
+        proposals.add(new ProposalInWork(requiredTypes));
     }
 
     public BinderConfig getConfig() {
@@ -70,6 +72,10 @@ public class WorkingMemory {
 
     public Map<ServiceType, Set<ServiceImplementation>> getAlternatives() {
         return alternatives;
+    }
+
+    public Set<ProposalInWork> getProposals() {
+        return proposals;
     }
 
     private Set<Criterion> orderCriterions(Query query, KnowledgeBaseAdapter knowledgeBase) {
