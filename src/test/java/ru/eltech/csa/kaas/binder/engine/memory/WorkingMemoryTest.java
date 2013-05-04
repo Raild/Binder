@@ -79,17 +79,9 @@ public class WorkingMemoryTest {
     @Test
     public void getAllCriterionsTestFull() {
         query.getConfig().setParameter(ConfigParameter.CRITERION_USING_STRATEGY,
-                CriterionUsingStrategy.FULL_SORTING_CRITERIONS);
+                CriterionUsingStrategy.ALL_KNOWLEDGE_BASE_CRITERIONS);
         memory = new WorkingMemory(query, adapter);
         assertCriterionsOrder(Arrays.asList(crit1, crit3, crit4, crit2), memory.getAllCriterions());
-    }
-
-    @Test
-    public void getAllCriterionsTestGroup() {
-        query.getConfig().setParameter(ConfigParameter.CRITERION_USING_STRATEGY,
-                CriterionUsingStrategy.GROUP_SORTING_CRITERIONS);
-        memory = new WorkingMemory(query, adapter);
-        assertCriterionsOrder(Arrays.asList(crit1, crit3, crit2, crit4), memory.getAllCriterions());
     }
 
     private void assertCriterionsOrder(List<Criterion> expected, List<Criterion> actual) {
