@@ -51,6 +51,10 @@ public class WorkingMemory {
      * Built proposals.
      */
     private Set<ProposalInWork> proposals = new HashSet<>();
+    /**
+     * Proposals log for avoiding duplicate branches.
+     */
+    private Set<ProposalInWork> proposalsLog = new HashSet<>();
 
     public WorkingMemory(Query query, KnowledgeBaseAdapter knowledgeBase) {
         this.knowledgeBase = knowledgeBase;
@@ -60,6 +64,14 @@ public class WorkingMemory {
         alternatives = initAlternatives(query, knowledgeBase);
 
         proposals.add(new ProposalInWork(requiredTypes));
+    }
+
+    public void addToProposalsLog(ProposalInWork proposal) {
+        proposalsLog.add(proposal);
+    }
+
+    public boolean isInProposalsLog(ProposalInWork proposal) {
+        return proposalsLog.contains(proposal);
     }
 
     public BinderConfig getConfig() {
