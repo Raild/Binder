@@ -8,10 +8,14 @@ import ru.eltech.csa.kaas.binder.model.ServiceType;
 /**
  * Internal class for reasoning. Contains service type and its implementation.
  */
-class ProposalEntry {
+public class ProposalEntry {
 
     private ServiceType type;
     private ServiceImplementation implementation;
+
+    public boolean isImplementationEmpty() {
+        return implementation == null;
+    }
 
     public ServiceType getType() {
         return type;

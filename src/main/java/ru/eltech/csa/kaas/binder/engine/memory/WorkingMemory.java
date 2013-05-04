@@ -78,6 +78,10 @@ public class WorkingMemory {
         return proposals;
     }
 
+    public Set<Estimate> getCorruptEstimates() {
+        return corruptEstimates;
+    }
+
     private Set<Criterion> orderCriterions(Query query, KnowledgeBaseAdapter knowledgeBase) {
         CriterionUsingStrategy criterionUsingStrategy = query.getConfig().getCriterionUsingStrategy();
         Set<Criterion> result = null;

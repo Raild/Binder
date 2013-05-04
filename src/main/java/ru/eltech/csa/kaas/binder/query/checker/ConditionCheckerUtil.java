@@ -15,8 +15,6 @@ public final class ConditionCheckerUtil {
     static {
         checkers.put(Operator.MORE, new MoreConditionChecker());
         checkers.put(Operator.MORE_OR_EQUAL, new MoreOrEqualConditionChecker());
-        checkers.put(Operator.LESS, new LessConditionChecker());
-        checkers.put(Operator.LESS_OR_EQUAL, new LessOrEqualConditionChecker());
     }
 
     /**
