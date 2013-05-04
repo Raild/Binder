@@ -5,12 +5,12 @@ public class CriterionImportance {
     private String criterionId;
     private Double importanceValue;
 
-    public String getCriterion() {
+    public String getCriterionId() {
         return criterionId;
     }
 
-    public void setCriterion(String criterion) {
-        this.criterionId = criterion;
+    public void setCriterionId(String criterionId) {
+        this.criterionId = criterionId;
     }
 
     public Double getImportanceValue() {

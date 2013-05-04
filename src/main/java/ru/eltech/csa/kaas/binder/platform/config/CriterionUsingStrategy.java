@@ -10,7 +10,7 @@ public enum CriterionUsingStrategy {
      */
     ONLY_QUERY_CRITERIONS,
     /**
-     * All the knowledge base criterions is used. Sorted by importance.
+     * All the knowledge base criterions is used. Sorted by importance.z
      */
     FULL_SORTING_CRITERIONS,
     /**

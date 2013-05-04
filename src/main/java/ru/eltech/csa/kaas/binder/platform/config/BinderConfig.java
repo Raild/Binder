@@ -10,7 +10,7 @@ public class BinderConfig {
 
     private Map<ConfigParameter, Object> parameters = new EnumMap(ConfigParameter.class);
 
-    public void setParameter(ConfigParameter parameter, String value) {
+    public void setParameter(ConfigParameter parameter, Object value) {
         parameters.put(parameter, value);
     }
 

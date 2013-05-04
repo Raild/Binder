@@ -187,4 +187,34 @@ public class KnowledgeBaseAdapterTest {
         adapter = new KnowledgeBaseAdapter(base);
         Assert.assertEquals(Arrays.asList(es1, es2), adapter.findCriterionEstimates(crit));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void unexistCriterionIdSearch() {
+        adapter = new KnowledgeBaseAdapter(new KnowledgeBase());
+        adapter.findCriterion("unexist criterion");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void unexistEstimateIdSearch() {
+        adapter = new KnowledgeBaseAdapter(new KnowledgeBase());
+        adapter.findEstimate("unexist criterion");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void unexistImplementationIdSearch() {
+        adapter = new KnowledgeBaseAdapter(new KnowledgeBase());
+        adapter.findServiceImplementation("unexist criterion");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void unexistTypeIdSearch() {
+        adapter = new KnowledgeBaseAdapter(new KnowledgeBase());
+        adapter.findServiceType("unexist criterion");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void unexistProviderIdSearch() {
+        adapter = new KnowledgeBaseAdapter(new KnowledgeBase());
+        adapter.findServiceProvider("unexist criterion");
+    }
 }

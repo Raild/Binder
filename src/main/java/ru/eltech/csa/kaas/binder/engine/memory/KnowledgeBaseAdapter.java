@@ -121,23 +121,23 @@ public class KnowledgeBaseAdapter {
     }
 
     public Criterion findCriterion(String id) {
-        return criterions.get(id);
+        return findKnowledge(criterions, id);
     }
 
     public Estimate findEstimate(String id) {
-        return estimates.get(id);
+        return findKnowledge(estimates, id);
     }
 
     public ServiceType findServiceType(String id) {
-        return serviceTypes.get(id);
+        return findKnowledge(serviceTypes,id);
     }
 
     public ServiceProvider findServiceProvider(String id) {
-        return serviceProviders.get(id);
+        return findKnowledge(serviceProviders,id);
     }
 
     public ServiceImplementation findServiceImplementation(String id) {
-        return serviceImplementations.get(id);
+        return findKnowledge(serviceImplementations,id);
     }
 
     public List<Criterion> getCriterions() {
@@ -158,6 +158,14 @@ public class KnowledgeBaseAdapter {
 
     public List<ServiceImplementation> getServiceImplementations() {
         return knowledgeBase.getServiceImplementations();
+    }
+    
+    private <T extends AbstractKnowledge> T findKnowledge(Map<String, T> where, String id) {
+        T item = where.get(id);
+        if (item == null) {
+            throw new IllegalArgumentException("There is no item with id: " + id + " in the knowledge base.");
+        }
+        return item;
     }
 
     private <T extends AbstractKnowledge> void initIdMap(Map<String, ? super T> map, List<? extends T> list, PostInitOperations post) {

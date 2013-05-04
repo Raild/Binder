@@ -8,7 +8,7 @@ public class Query {
     private List<String> serviceTypesId;
     private List<CriterionImportance> criterionImportances;
     private List<Condition> conditions;
-    private BinderConfig config;
+    private BinderConfig config = new BinderConfig();
 
     public List<String> getServiceTypesId() {
         return serviceTypesId;
