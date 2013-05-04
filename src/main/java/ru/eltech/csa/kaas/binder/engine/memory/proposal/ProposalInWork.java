@@ -59,6 +59,10 @@ public class ProposalInWork {
         addProviderUsing(implementation.getServiceProvider());
         filledEntriesCounter++;
     }
+    
+    public boolean hasEmptySlots() {
+        return filledEntriesCounter < entries.size();
+    }
 
     private void addProviderUsing(ServiceProvider provider) {
         Integer count = usedProviders.get(provider);
