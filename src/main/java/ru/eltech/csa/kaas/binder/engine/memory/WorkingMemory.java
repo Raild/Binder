@@ -2,10 +2,13 @@ package ru.eltech.csa.kaas.binder.engine.memory;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import ru.eltech.csa.kaas.binder.model.Criterion;
+import ru.eltech.csa.kaas.binder.model.ServiceImplementation;
+import ru.eltech.csa.kaas.binder.model.ServiceType;
 import ru.eltech.csa.kaas.binder.platform.config.BinderConfig;
 import ru.eltech.csa.kaas.binder.platform.config.CriterionUsingStrategy;
 import ru.eltech.csa.kaas.binder.query.CriterionImportance;
@@ -18,20 +21,25 @@ public class WorkingMemory {
 
     private KnowledgeBaseAdapter knowledgeBase;
     private Query query;
-    private List<Criterion> allCriterions;
+    private List<Criterion> criterions;
+    /**
+     * required service types and set of alternative implementations
+     */
+    private Map<ServiceType, Set<ServiceImplementation>> alternatives;
 
     public WorkingMemory(Query query, KnowledgeBaseAdapter knowledgeBase) {
         this.knowledgeBase = knowledgeBase;
         this.query = query;
-        allCriterions = orderCriterions(query, knowledgeBase);
+        criterions = orderCriterions(query, knowledgeBase);
+        alternatives = initAlternatives(query, knowledgeBase);
     }
 
     public BinderConfig getConfig() {
         return query.getConfig();
     }
 
-    public List<Criterion> getAllCriterions() {
-        return allCriterions;
+    public List<Criterion> getCriterions() {
+        return criterions;
     }
 
     private List<Criterion> orderCriterions(Query query, KnowledgeBaseAdapter knowledgeBase) {
@@ -61,7 +69,6 @@ public class WorkingMemory {
                 }
                 result.add(crit);
             }
-            Collections.sort(result, Collections.reverseOrder());
         }
         return result;
     }
@@ -78,7 +85,22 @@ public class WorkingMemory {
                     }
                 }
             }
-            Collections.sort(result, Collections.reverseOrder());
+        }
+        return result;
+    }
+
+    private Map<ServiceType, Set<ServiceImplementation>> initAlternatives(Query query, KnowledgeBaseAdapter knowledgeBase) {
+        Map<ServiceType, Set<ServiceImplementation>> result = new HashMap<>();
+        if (query.getServiceTypesId() == null || query.getServiceTypesId().isEmpty()) {
+            throw new IllegalArgumentException("At least one service type must be queried.");
+        }
+        for (String typeId : query.getServiceTypesId()) {
+            ServiceType type = knowledgeBase.findServiceType(typeId);
+            if (result.containsKey(type)) {
+                throw new IllegalArgumentException("Query contains item with duplicate id: " + typeId);
+            }
+            Set<ServiceImplementation> typeImplementations = knowledgeBase.findTypeImplementations(type);
+
         }
         return result;
     }
