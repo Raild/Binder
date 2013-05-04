@@ -6,7 +6,7 @@ public class Condition {
     private Operator operator;
     private double value;
 
-    public String getCriterion() {
+    public String getCriterionId() {
         return criterionId;
     }
 

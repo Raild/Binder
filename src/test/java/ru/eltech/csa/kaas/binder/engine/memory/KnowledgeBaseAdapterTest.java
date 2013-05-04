@@ -159,11 +159,17 @@ public class KnowledgeBaseAdapterTest {
     }
 
     @Test
+    public void findImplementationCriterionEstimatesTest() {
+        adapter = new KnowledgeBaseAdapter(knowledgeBase);
+        Assert.assertEquals(estimateList, adapter.findImplementationCriterionEstimates(serviceImplementation1, criterion));
+        Assert.assertEquals(Collections.emptyList(), adapter.findImplementationCriterionEstimates(serviceImplementation2, criterion));
+        Assert.assertEquals(estimateList, adapter.findImplementationCriterionEstimates(serviceImplementation3, criterion));
+    }
+
+    @Test
     public void findImplementationEstimatesTest() {
         adapter = new KnowledgeBaseAdapter(knowledgeBase);
-        Assert.assertEquals(estimateList, adapter.findImplementationEstimates(serviceImplementation1, criterion));
-        Assert.assertEquals(Collections.emptyList(), adapter.findImplementationEstimates(serviceImplementation2, criterion));
-        Assert.assertEquals(estimateList, adapter.findImplementationEstimates(serviceImplementation3, criterion));
+        Assert.assertEquals(new HashSet<>(estimateList), adapter.findImplementationEstimates(serviceImplementation1));
     }
 
     @Test

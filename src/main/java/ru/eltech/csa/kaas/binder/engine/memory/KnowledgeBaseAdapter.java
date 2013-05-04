@@ -28,7 +28,8 @@ public class KnowledgeBaseAdapter {
     private Map<String, ServiceImplementation> serviceImplementations = new HashMap<>();
     private Map<ServiceType, Set<ServiceImplementation>> typeImplementations = new HashMap<>();
     private Map<ServiceProvider, List<ServiceImplementation>> providerImplementationCache = new HashMap<>();
-    private Map<ServiceImplementation, Map<Criterion, List<Estimate>>> implementationEstimates = new HashMap<>();
+    private Map<ServiceImplementation, Set<Estimate>> implementationEstimates = new HashMap<>();
+    private Map<ServiceImplementation, Map<Criterion, List<Estimate>>> implementationCriterionEstimates = new HashMap<>();
     private Map<Criterion, List<Estimate>> criterionEstimates = new HashMap<>();
     private Map<ServiceType, Set<ServiceType>> typeChilds = new HashMap<>();
 
@@ -101,8 +102,8 @@ public class KnowledgeBaseAdapter {
      * @param crit the criterion
      * @return see description
      */
-    public List<Estimate> findImplementationEstimates(ServiceImplementation impl, Criterion crit) {
-        Map<Criterion, List<Estimate>> innerMap = implementationEstimates.get(impl);
+    public List<Estimate> findImplementationCriterionEstimates(ServiceImplementation impl, Criterion crit) {
+        Map<Criterion, List<Estimate>> innerMap = implementationCriterionEstimates.get(impl);
         if (innerMap != null) {
             List<Estimate> list = innerMap.get(crit);
             if (list != null) {
@@ -112,6 +113,26 @@ public class KnowledgeBaseAdapter {
         return Collections.emptyList();
     }
 
+    /**
+     * Finds all estimates of the given implementation in knowledge base.
+     *
+     * @param impl the implementation
+     * @return see description
+     */
+    public Set<Estimate> findImplementationEstimates(ServiceImplementation impl) {
+        Set<Estimate> set = implementationEstimates.get(impl);
+        if (set != null) {
+            return set;
+        }
+        return Collections.emptySet();
+    }
+
+    /**
+     * Finds all estimate by the given criterion in knowledge base.
+     *
+     * @param criterion the criterion
+     * @return see description
+     */
     public List<Estimate> findCriterionEstimates(Criterion criterion) {
         List<Estimate> list = criterionEstimates.get(criterion);
         if (list != null) {
@@ -129,15 +150,15 @@ public class KnowledgeBaseAdapter {
     }
 
     public ServiceType findServiceType(String id) {
-        return findKnowledge(serviceTypes,id);
+        return findKnowledge(serviceTypes, id);
     }
 
     public ServiceProvider findServiceProvider(String id) {
-        return findKnowledge(serviceProviders,id);
+        return findKnowledge(serviceProviders, id);
     }
 
     public ServiceImplementation findServiceImplementation(String id) {
-        return findKnowledge(serviceImplementations,id);
+        return findKnowledge(serviceImplementations, id);
     }
 
     public List<Criterion> getCriterions() {
@@ -159,7 +180,7 @@ public class KnowledgeBaseAdapter {
     public List<ServiceImplementation> getServiceImplementations() {
         return knowledgeBase.getServiceImplementations();
     }
-    
+
     private <T extends AbstractKnowledge> T findKnowledge(Map<String, T> where, String id) {
         T item = where.get(id);
         if (item == null) {
@@ -207,13 +228,18 @@ public class KnowledgeBaseAdapter {
     }
 
     private void putImplementationEstimate(ServiceImplementation serviceImplementation, Criterion criterion, Estimate estimate) {
-        Map<Criterion, List<Estimate>> innerMap = implementationEstimates.get(serviceImplementation);
+        Map<Criterion, List<Estimate>> innerMap = implementationCriterionEstimates.get(serviceImplementation);
         if (innerMap == null) {
             innerMap = new HashMap<>();
-            implementationEstimates.put(serviceImplementation, innerMap);
+            implementationCriterionEstimates.put(serviceImplementation, innerMap);
         }
         putCriterionEstimate(innerMap, criterion, estimate);
-
+        Set<Estimate> innerSet = implementationEstimates.get(serviceImplementation);
+        if (innerSet == null) {
+            innerSet = new HashSet<>();
+            implementationEstimates.put(serviceImplementation, innerSet);
+        }
+        innerSet.add(estimate);
     }
 
     private void putCriterionEstimate(Map<Criterion, List<Estimate>> map, Criterion criterion, Estimate estimate) {
