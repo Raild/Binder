@@ -42,13 +42,13 @@ public class WorkingMemory {
     /**
      * Cache of criterion conditions.
      */
-    private Map<Criterion, Set<Condition>> criterionConditions = new HashMap<>();
+    private Map<Criterion, Set<Condition>> criterionConditions;
 
     public WorkingMemory(Query query, KnowledgeBaseAdapter knowledgeBase) {
         this.knowledgeBase = knowledgeBase;
         this.query = query;
         criterions = orderCriterions(query, knowledgeBase);
-        initCriterionConditions(query, knowledgeBase);
+        criterionConditions = initCriterionConditions(query, knowledgeBase);
         alternatives = initAlternatives(query, knowledgeBase);
     }
 
@@ -116,18 +116,20 @@ public class WorkingMemory {
         maxCriterionImportance = Collections.max(set).getImportance();
     }
 
-    private void initCriterionConditions(Query query, KnowledgeBaseAdapter knowledgeBase) {
+    private HashMap<Criterion, Set<Condition>> initCriterionConditions(Query query, KnowledgeBaseAdapter knowledgeBase) {
+        HashMap<Criterion, Set<Condition>> result = new HashMap<>();
         if (query.getConditions() != null) {
             for (Condition condition : query.getConditions()) {
                 Criterion crit = knowledgeBase.findCriterion(condition.getCriterionId());
-                Set<Condition> innerSet = criterionConditions.get(crit);
+                Set<Condition> innerSet = result.get(crit);
                 if (innerSet == null) {
                     innerSet = new HashSet<>();
-                    criterionConditions.put(crit, innerSet);
+                    result.put(crit, innerSet);
                 }
                 innerSet.add(condition);
             }
         }
+        return result;
     }
 
     private Map<ServiceType, Set<ServiceImplementation>> initAlternatives(Query query, KnowledgeBaseAdapter knowledgeBase) {
