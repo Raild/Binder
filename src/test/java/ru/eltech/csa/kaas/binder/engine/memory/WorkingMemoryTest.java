@@ -1,16 +1,21 @@
 package ru.eltech.csa.kaas.binder.engine.memory;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+import ru.eltech.csa.kaas.binder.engine.memory.proposal.ProposalInWork;
 import ru.eltech.csa.kaas.binder.model.Criterion;
 import ru.eltech.csa.kaas.binder.model.KnowledgeBase;
 import ru.eltech.csa.kaas.binder.model.ServiceType;
 import ru.eltech.csa.kaas.binder.platform.config.ConfigParameter;
 import ru.eltech.csa.kaas.binder.platform.config.CriterionUsingStrategy;
+import ru.eltech.csa.kaas.binder.query.Condition;
 import ru.eltech.csa.kaas.binder.query.CriterionImportance;
+import ru.eltech.csa.kaas.binder.query.Operator;
 import ru.eltech.csa.kaas.binder.query.Query;
 
 public class WorkingMemoryTest {
@@ -25,6 +30,8 @@ public class WorkingMemoryTest {
     private static final Double IMPORTANCE3_2 = 0.83;
     private static final Double IMPORTANCE4 = 0.7;
     private static final String TYPE_ID1 = "t1";
+    private static final Double CONDITION_VALUE1 = 0.7;
+    private static final Double CONDITION_VALUE2 = 0.5;
     private WorkingMemory memory;
     private Query query;
     private KnowledgeBaseAdapter adapter;
@@ -62,6 +69,19 @@ public class WorkingMemoryTest {
         type1 = new ServiceType();
         type1.setId(TYPE_ID1);
 
+        Condition condition1 = new Condition();
+        condition1.setCriterion(CRITERION_ID1);
+        condition1.setOperator(Operator.MORE);
+        condition1.setValue(CONDITION_VALUE1);
+        Condition condition2 = new Condition();
+        condition2.setCriterion(CRITERION_ID2);
+        condition2.setOperator(Operator.MORE);
+        condition2.setValue(CONDITION_VALUE2);
+        Condition condition3 = new Condition();
+        condition3.setCriterion(CRITERION_ID3);
+        condition3.setOperator(Operator.MORE_OR_EQUAL);
+        condition3.setValue(CONDITION_VALUE2);
+
         KnowledgeBase base = new KnowledgeBase();
         base.setCriterions(Arrays.asList(crit1, crit2, crit3, crit4));
         base.setServiceTypes(Arrays.asList(type1));
@@ -69,6 +89,7 @@ public class WorkingMemoryTest {
         query = new Query();
         query.setCriterionImportances(Arrays.asList(ci1, ci2, ci3));
         query.setServiceTypesId(Arrays.asList(TYPE_ID1));
+        query.setConditions(Arrays.asList(condition1, condition2, condition3));
 
         adapter = new KnowledgeBaseAdapter(base);
     }
@@ -111,5 +132,21 @@ public class WorkingMemoryTest {
     public void emptyServiceTypes() {
         Query q = new Query();
         memory = new WorkingMemory(q, new KnowledgeBaseAdapter(new KnowledgeBase()));
+    }
+
+    @Test
+    public void proposalLogTest() {
+        memory = new WorkingMemory(query, adapter);
+        Set<ServiceType> emptySet = Collections.emptySet();
+        ProposalInWork piw = new ProposalInWork(emptySet);
+        assertFalse(memory.isInProposalsLog(piw));
+        memory.addToProposalsLog(piw);
+        assertTrue(memory.isInProposalsLog(piw));
+    }
+
+    @Test
+    public void maxImportanceTest() {
+        memory = new WorkingMemory(query, adapter);
+        assertEquals(IMPORTANCE1, memory.getMaxCriterionImportance());
     }
 }
