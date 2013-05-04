@@ -1,12 +1,11 @@
 package ru.eltech.csa.kaas.binder.engine.memory;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import ru.eltech.csa.kaas.binder.engine.memory.proposal.ProposalInWork;
 import ru.eltech.csa.kaas.binder.model.Criterion;
 import ru.eltech.csa.kaas.binder.model.Estimate;
 import ru.eltech.csa.kaas.binder.model.ServiceImplementation;
@@ -35,6 +34,10 @@ public class WorkingMemory {
      */
     private Map<ServiceType, Set<ServiceImplementation>> alternatives;
     /**
+     * Service types queried by the user.
+     */
+    private Set<ServiceType> requiredTypes;
+    /**
      * Set of corrupt estimates. If even one of them is satisfied,
      * implementation proposition will break the query conditions.
      */
@@ -43,6 +46,11 @@ public class WorkingMemory {
      * Cache of criterion conditions.
      */
     private Map<Criterion, Set<Condition>> criterionConditions;
+    
+    /**
+     * Built proposals.
+     */
+    private Set<ProposalInWork> proposals = new HashSet<>();
 
     public WorkingMemory(Query query, KnowledgeBaseAdapter knowledgeBase) {
         this.knowledgeBase = knowledgeBase;
@@ -144,6 +152,7 @@ public class WorkingMemory {
             }
             Set<ServiceImplementation> typeImplementations = knowledgeBase.findTypeImplementations(type);
             result.put(type, filter(typeImplementations, query, knowledgeBase));
+            requiredTypes.add(type);
         }
         return result;
     }
