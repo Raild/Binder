@@ -2,6 +2,7 @@ package ru.eltech.csa.kaas.binder.engine.memory.proposal;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -19,7 +20,7 @@ public class ProposalInWork {
     private Map<ServiceType, ProposalEntry> entries = new HashMap<>();
     private Map<ServiceProvider, Integer> usedProviders = new HashMap<>();
     private Set<ServiceProvider> requiredProviders = new HashSet<>();
-    private Set<Estimate> firedEstimates = new HashSet<>();
+    private Set<Estimate> firedEstimates = new LinkedHashSet<>();
     private int filledEntriesCounter = 0;
 
     public ProposalInWork(Set<ServiceType> requiredTypes) {
@@ -51,6 +52,12 @@ public class ProposalInWork {
     }
 
     public void addImplementation(ServiceImplementation implementation) {
+        if (implementation.getServiceProvider() == null) {
+            throw new IllegalArgumentException("Implementation without provider: " + implementation);
+        }
+        if (implementation.getServiceType() == null) {
+            throw new IllegalArgumentException("Implementation without service type: " + implementation);
+        }
         ProposalEntry entry = entries.get(implementation.getServiceType());
         if (!entry.isImplementationEmpty()) {
             throw new IllegalArgumentException("Slot is not empty. Cannot add impl: " + implementation);
@@ -59,9 +66,15 @@ public class ProposalInWork {
         addProviderUsing(implementation.getServiceProvider());
         filledEntriesCounter++;
     }
-    
+
     public boolean hasEmptySlots() {
         return filledEntriesCounter < entries.size();
+    }
+
+    public void logFiredEstimate(Estimate estimate) {
+        if (!firedEstimates.add(estimate)) {
+            throw new IllegalArgumentException("The estimate has already been fired for proposal.");
+        }
     }
 
     private void addProviderUsing(ServiceProvider provider) {
