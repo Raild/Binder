@@ -11,7 +11,11 @@ public enum ConfigParameter {
      * provider.
      */
     ONLY_ONE_PROVIDER(Boolean.FALSE),
-    CRITERION_USING_STRATEGY(CriterionUsingStrategy.ONLY_QUERY_CRITERIONS);
+    /**
+     * Strategy for choosing criterions.
+     */
+    CRITERION_USING_STRATEGY(CriterionUsingStrategy.ONLY_QUERY_CRITERIONS);    
+    
     private Object defaultValue;
 
     private ConfigParameter(Object defaultValue) {
