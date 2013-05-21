@@ -14,7 +14,15 @@ public enum ConfigParameter {
     /**
      * Strategy for choosing criterions.
      */
-    CRITERION_USING_STRATEGY(CriterionUsingStrategy.ONLY_QUERY_CRITERIONS);    
+    CRITERION_USING_STRATEGY(CriterionUsingStrategy.ONLY_QUERY_CRITERIONS),
+    /**
+     * Max number of proposals which can be given to user.
+     */
+    MAX_PROPOSAL_NUMBER(1),
+    /**
+     * Max number of providers which can be used for one proposal.
+     */
+    MAX_PROVIDER_NUMBER(3);
     
     private Object defaultValue;
 

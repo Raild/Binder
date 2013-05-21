@@ -25,6 +25,10 @@ public class BinderConfig {
     public Double getParameterAsDouble(ConfigParameter parameter) {
         return (Double) getParameter(parameter);
     }
+    
+    public Integer getParameterAsInteger(ConfigParameter parameter) {
+        return (Integer) getParameter(parameter);
+    }
 
     public Boolean getParameterAsBoolean(ConfigParameter parameter) {
         return (Boolean) getParameter(parameter);
